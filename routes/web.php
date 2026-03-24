@@ -2,6 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return dd("test");
+Route::get('/testweb', function () {
+    return dd();
 });
