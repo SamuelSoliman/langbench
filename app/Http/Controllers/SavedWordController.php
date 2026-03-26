@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\SavedWord;
 use Illuminate\Http\Request;
+use App\Http\Requests\SavedWordStoreRequest;
+use App\Http\Requests\SavedWordUpdateRequest;
+use App\Http\Resources\SavedWordResource;
 
 class SavedWordController extends Controller
 {
@@ -12,7 +15,7 @@ class SavedWordController extends Controller
      */
     public function index()
     {
-        //
+        return SavedWordResource::collection(SavedWord::all());
     }
 
     /**
@@ -26,9 +29,12 @@ class SavedWordController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(SavedWordStoreRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $savedWord = $request->user()->savedWords()->create($validated);
+
+        return new SavedWordResource($savedWord);
     }
 
     /**
@@ -36,7 +42,7 @@ class SavedWordController extends Controller
      */
     public function show(SavedWord $savedWord)
     {
-        //
+        return new SavedWordResource($savedWord);
     }
 
     /**
@@ -50,9 +56,11 @@ class SavedWordController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, SavedWord $savedWord)
+    public function update(SavedWordUpdateRequest $request, SavedWord $savedWord)
     {
-        //
+        $savedWord->update($request->validated());
+
+        return new SavedWordResource($savedWord);
     }
 
     /**
@@ -60,6 +68,8 @@ class SavedWordController extends Controller
      */
     public function destroy(SavedWord $savedWord)
     {
-        //
+        $savedWord->delete();
+
+        return response()->noContent();
     }
 }

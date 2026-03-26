@@ -4,6 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Quiz;
 use Illuminate\Http\Request;
+use App\Http\Requests\QuizStoreRequest;
+use App\Http\Requests\QuizUpdateRequest;
+use App\Http\Resources\QuizResource;
 
 class QuizController extends Controller
 {
@@ -12,7 +15,7 @@ class QuizController extends Controller
      */
     public function index()
     {
-        //
+        return QuizResource::collection(Quiz::all());
     }
 
     /**
@@ -26,9 +29,12 @@ class QuizController extends Controller
     /**
      * Store a newly created resource in storage.
      */
-    public function store(Request $request)
+    public function store(QuizStoreRequest $request)
     {
-        //
+        $validated = $request->validated();
+        $quiz = $request->user()->quizzes()->create($validated);
+
+        return new QuizResource($quiz);
     }
 
     /**
@@ -36,7 +42,7 @@ class QuizController extends Controller
      */
     public function show(Quiz $quiz)
     {
-        //
+        return new QuizResource($quiz);
     }
 
     /**
@@ -50,9 +56,11 @@ class QuizController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Quiz $quiz)
+    public function update(QuizUpdateRequest $request, Quiz $quiz)
     {
-        //
+        $quiz->update($request->validated());
+
+        return new QuizResource($quiz);
     }
 
     /**
@@ -60,6 +68,8 @@ class QuizController extends Controller
      */
     public function destroy(Quiz $quiz)
     {
-        //
+        $quiz->delete();
+
+        return response()->noContent();
     }
 }
